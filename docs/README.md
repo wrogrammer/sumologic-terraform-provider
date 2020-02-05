@@ -23,6 +23,7 @@
   
 ##### Content
   + [sumologic_scheduled_view][40]
+  + [sumologic_metrics_alert_monitor][41]
 
 #### Common Source Properties
 
@@ -60,3 +61,4 @@ The following properties are common to ALL sources and can be used to configure 
 [30]: r/sumologic_role.md
 [31]: r/sumologic_user.md
 [40]: r/sumologic_scheduled_view.md
+[41]: r/sumologic_metrics_alert_monitor.md
