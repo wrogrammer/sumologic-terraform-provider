@@ -240,8 +240,8 @@ func resourceSumologicMetricsAlertMonitorExists(d *schema.ResourceData, meta int
 }
 
 func resourceToMetricsAlertMonitor(d *schema.ResourceData) MetricsAlertMonitor {
-	alertQueries := getAlertQueries(d.Get("alert_queries").([]interface{}))
-	monitorRules := getMonitorRules(d.Get("monitor_rules").([]interface{})[0])
+	alertQueries := expandAlertQueries(d.Get("alert_queries").([]interface{}))
+	monitorRules := expandMonitorRules(d.Get("monitor_rules").([]interface{})[0])
 
 	metricsAlertMonitor := MetricsAlertMonitor{
 		Name:		  d.Get("name").(string),
@@ -254,7 +254,7 @@ func resourceToMetricsAlertMonitor(d *schema.ResourceData) MetricsAlertMonitor {
 	return metricsAlertMonitor
 }
 
-func getAlertQueries(alertQueries []interface{}) []AlertQuery {
+func expandAlertQueries(alertQueries []interface{}) []AlertQuery {
 	var result []AlertQuery
 	for _, alertQueryRaw := range alertQueries {
 		alertQueryMap := alertQueryRaw.(map[string]interface{})
@@ -267,7 +267,7 @@ func getAlertQueries(alertQueries []interface{}) []AlertQuery {
 	return result
 }
 
-func getMonitorRules(monitorRules interface{}) MonitorRules {
+func expandMonitorRules(monitorRules interface{}) MonitorRules {
 	if monitorRules == nil {
 		return MonitorRules{}
 	}
@@ -275,9 +275,9 @@ func getMonitorRules(monitorRules interface{}) MonitorRules {
 	var missingDataRule *MissingDataRule
 
 	var rulesMap = monitorRules.(map[string]interface{})
-	warningRule = getRule("warning_rule", rulesMap)
-	criticalRule = getRule("critical_rule", rulesMap)
-	missingDataRule = getMissingDataRule(rulesMap)
+	warningRule = expandRule("warning_rule", rulesMap)
+	criticalRule = expandRule("critical_rule", rulesMap)
+	missingDataRule = expandMissingDataRule(rulesMap)
 
 	return MonitorRules{
 		WarningRule: warningRule,
@@ -286,14 +286,14 @@ func getMonitorRules(monitorRules interface{}) MonitorRules {
 	}
 }
 
-func getRule(key string, rulesMap map[string]interface{}) *Rule {
+func expandRule(key string, rulesMap map[string]interface{}) *Rule {
 	var rule *Rule
 	if ruleRaw := rulesMap[key].([]interface{}); len(ruleRaw) == 1 {
 		ruleMap := ruleRaw[0].(map[string]interface{})
 		thresholdType := ruleMap["threshold_type"].(string)
 		threshold := ruleMap["threshold"].(float64)
 		duration := ruleMap["duration"].(string)
-		notifications := getNotifications(ruleMap)
+		notifications := expandNotifications(ruleMap)
 		rule = &Rule{
 			ThresholdType:	thresholdType,
 			Threshold:		threshold,
@@ -304,13 +304,13 @@ func getRule(key string, rulesMap map[string]interface{}) *Rule {
 	return rule
 }
 
-func getMissingDataRule(rulesMap map[string]interface{}) *MissingDataRule {
+func expandMissingDataRule(rulesMap map[string]interface{}) *MissingDataRule {
 	var missingDataRule *MissingDataRule
 	if missingDataRuleRaw := rulesMap["missing_data_rule"].([]interface{}); len(missingDataRuleRaw) == 1 {
 		missingDataRuleMap := missingDataRuleRaw[0].(map[string]interface{})
 		affectedTimeSeries := missingDataRuleMap["affected_time_series"].(string)
 		duration := missingDataRuleMap["duration"].(int)
-		notifications := getNotifications(missingDataRuleMap)
+		notifications := expandNotifications(missingDataRuleMap)
 		missingDataRule = &MissingDataRule{
 			AffectedTimeSeries: affectedTimeSeries,
 			Duration:           duration,
@@ -320,13 +320,13 @@ func getMissingDataRule(rulesMap map[string]interface{}) *MissingDataRule {
 	return missingDataRule
 }
 
-func getNotifications(ruleMap map[string]interface{}) *Notifications {
+func expandNotifications(ruleMap map[string]interface{}) *Notifications {
 	var notifications *Notifications
 	if notificationsRaw := ruleMap["notifications"].([]interface{}); len(notificationsRaw) == 1 {
 		if notificationsRaw[0] != nil {
 			notificationsMap := notificationsRaw[0].(map[string]interface{})
-			emailNotifications := getEmailNotifications(notificationsMap)
-			webhookNotifications := getWebhookNotifications(notificationsMap)
+			emailNotifications := expandEmailNotifications(notificationsMap)
+			webhookNotifications := expandWebhookNotifications(notificationsMap)
 			notifications = &Notifications{
 				EmailNotifications:   emailNotifications,
 				WebhookNotifications: webhookNotifications,
@@ -338,7 +338,7 @@ func getNotifications(ruleMap map[string]interface{}) *Notifications {
 	return notifications
 }
 
-func getEmailNotifications(notificationsMap map[string]interface{}) *EmailNotifications {
+func expandEmailNotifications(notificationsMap map[string]interface{}) *EmailNotifications {
 	var emailNotifications *EmailNotifications
 	if emailNotificationsRaw := notificationsMap["email_notifications"].([]interface{}); len(emailNotificationsRaw) == 1 {
 		if emailNotificationsRaw[0] != nil {
@@ -360,7 +360,7 @@ func getEmailNotifications(notificationsMap map[string]interface{}) *EmailNotifi
 	return emailNotifications
 }
 
-func getWebhookNotifications(notificationsMap map[string]interface{}) []WebhookNotification {
+func expandWebhookNotifications(notificationsMap map[string]interface{}) []WebhookNotification {
 	var webhookNotifications []WebhookNotification
 	if webhookNotificationsRawOrNil, ok := notificationsMap["webhook_notifications"]; ok {
 		webhookNotificationsRaw := webhookNotificationsRawOrNil.([]interface{})
@@ -380,26 +380,8 @@ func getWebhookNotifications(notificationsMap map[string]interface{}) []WebhookN
 	return webhookNotifications
 }
 
-func ianaTimeZoneDatabaseFormat() schema.SchemaValidateFunc {
-	return func(i interface{}, k string) (s []string, es []error) {
-		v, ok := i.(string)
-		if !ok {
-			es = append(es, fmt.Errorf("expected type of %s to be string", k))
-			return
-		}
-		if v == "" || v == "UTC" || v == "Local" {
-			es = append(es, fmt.Errorf("timezone must be explicitly named"))
-		}
-		_, err := time.LoadLocation(v)
-		if err != nil {
-			es = append(es, fmt.Errorf("%s is not a correct timezone in IANA Time Zone Database format", v))
-		}
-		return
-	}
-}
-
-func flattenAlertQueries(in []AlertQuery) []map[string]interface{} {
-	var out = make([]map[string]interface{}, len(in), len(in))
+func flattenAlertQueries(in []AlertQuery) []interface{} {
+	var out = make([]interface{}, len(in), len(in))
 	for i, v := range in {
 		m := make(map[string]interface{})
 		m["row_id"] = v.RowId
@@ -471,13 +453,17 @@ func flattenEmailNotifications(in [1]EmailNotifications) []interface{} {
 	var out = make([]interface{}, 1, 1)
 	m := make(map[string]interface{})
 	emailNotifications := in[0]
-	m["recipients"] = emailNotifications.Recipients
+	var recipients = make([]interface{}, len(emailNotifications.Recipients), len(emailNotifications.Recipients))
+	for i, v := range emailNotifications.Recipients {
+		recipients[i] = v
+	}
+	m["recipients"] = recipients
 	out[0] = m
 	return out
 }
 
-func flattenWebhookNotifications(in []WebhookNotification) []map[string]interface{} {
-	var out = make([]map[string]interface{}, len(in), len(in))
+func flattenWebhookNotifications(in []WebhookNotification) []interface{} {
+	var out = make([]interface{}, 1, 1)
 	for i, v := range in {
 		m := make(map[string]interface{})
 		m["webhook_id"] = v.WebhookId
@@ -487,4 +473,22 @@ func flattenWebhookNotifications(in []WebhookNotification) []map[string]interfac
 		out[i] = m
 	}
 	return out
+}
+
+func ianaTimeZoneDatabaseFormat() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		if v == "" || v == "UTC" || v == "Local" {
+			es = append(es, fmt.Errorf("timezone must be explicitly named"))
+		}
+		_, err := time.LoadLocation(v)
+		if err != nil {
+			es = append(es, fmt.Errorf("%s is not a correct timezone in IANA Time Zone Database format", v))
+		}
+		return
+	}
 }
