@@ -52,11 +52,11 @@ func getTestAlertQueriesConfig() []interface{} {
 	return []interface{}{
 		map[string]interface{}{
 			"row_id": "A",
-			"query": "cpu_usage",
+			"query":  "cpu_usage",
 		},
 		map[string]interface{}{
 			"row_id": "B",
-			"query": "#A | avg",
+			"query":  "#A | avg",
 		},
 	}
 }
@@ -71,7 +71,7 @@ func getTestMonitorRules() MonitorRules {
 	warningRule := &Rule{
 		ThresholdType: "Above",
 		Threshold:     80,
-		Duration:	   "5m",
+		Duration:      "5m",
 		Notifications: warningRuleNotifications,
 	}
 
@@ -89,8 +89,8 @@ func getTestMonitorRules() MonitorRules {
 	}
 	criticalRule := &Rule{
 		ThresholdType: "Above",
-		Threshold: 90,
-		Duration: "10m",
+		Threshold:     90,
+		Duration:      "10m",
 		Notifications: criticalRuleNotifications,
 	}
 
@@ -102,8 +102,8 @@ func getTestMonitorRules() MonitorRules {
 	}
 	missingDataRule := &MissingDataRule{
 		AffectedTimeSeries: "all",
-		Duration: 60000,
-		Notifications: missingDataRuleNotifications,
+		Duration:           60000,
+		Notifications:      missingDataRuleNotifications,
 	}
 
 	return MonitorRules{
@@ -127,8 +127,8 @@ func getTestMonitorRulesConfig() map[string]interface{} {
 	warningRuleConfig := []interface{}{
 		map[string]interface{}{
 			"threshold_type": "Above",
-			"threshold": 	  float64(80),
-			"duration": 	  "5m",
+			"threshold":      float64(80),
+			"duration":       "5m",
 			"notifications":  warningRuleNotificationsConfig,
 		},
 	}
@@ -177,7 +177,7 @@ func getTestMonitorRulesConfig() map[string]interface{} {
 		},
 	}
 
-	monitorRulesConfig := map[string]interface{} {
+	monitorRulesConfig := map[string]interface{}{
 		"warning_rule":      warningRuleConfig,
 		"critical_rule":     criticalRuleConfig,
 		"missing_data_rule": missingDataRuleConfig,

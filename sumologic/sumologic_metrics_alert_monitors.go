@@ -48,52 +48,52 @@ func (s *Client) UpdateMetricsAlertMonitor(id string, monitor MetricsAlertMonito
 }
 
 type MetricsAlertMonitorInfo struct {
-	MonitorDefinition	MetricsAlertMonitor `json:"monitorDefinition"`
-	Id 					string 				`json:"id"`
+	MonitorDefinition MetricsAlertMonitor `json:"monitorDefinition"`
+	Id                string              `json:"id"`
 }
 
 type MetricsAlertMonitor struct {
-	Name 			string		 `json:"name"`
-	Description		string		 `json:"description,omitempty"`
-	AlertQueries 	[]AlertQuery `json:"alertQueries"`
-	Timezone		string		 `json:"timezone"`
-	MonitorRules	MonitorRules `json:"monitorRules"`
+	Name         string       `json:"name"`
+	Description  string       `json:"description,omitempty"`
+	AlertQueries []AlertQuery `json:"alertQueries"`
+	Timezone     string       `json:"timezone"`
+	MonitorRules MonitorRules `json:"monitorRules"`
 }
 
 type AlertQuery struct {
-	RowId	string `json:"rowId"`
-	Query	string `json:"query"`
+	RowId string `json:"rowId"`
+	Query string `json:"query"`
 }
 
 type MonitorRules struct {
-	WarningRule  	*Rule 			 `json:"warningRule,omitempty"`
-	CriticalRule 	*Rule 			 `json:"criticalRule,omitempty"`
-	MissingDataRule	*MissingDataRule `json:"missingDataRule,omitempty"`
+	WarningRule     *Rule            `json:"warningRule,omitempty"`
+	CriticalRule    *Rule            `json:"criticalRule,omitempty"`
+	MissingDataRule *MissingDataRule `json:"missingDataRule,omitempty"`
 }
 
 type Rule struct {
-	ThresholdType	string 		   `json:"thresholdType"`
-	Threshold		float64 	   `json:"threshold"`
-	Duration		string		   `json:"duration"`
-	Notifications	*Notifications `json:"notifications,omitempty"`
+	ThresholdType string         `json:"thresholdType"`
+	Threshold     float64        `json:"threshold"`
+	Duration      string         `json:"duration"`
+	Notifications *Notifications `json:"notifications,omitempty"`
 }
 
 type MissingDataRule struct {
-	AffectedTimeSeries	string 		   `json:"affectedTimeSeries"`
-	Duration 			int 		   `json:"duration"`
-	Notifications 		*Notifications `json:"notifications,omitempty"`
+	AffectedTimeSeries string         `json:"affectedTimeSeries"`
+	Duration           int            `json:"duration"`
+	Notifications      *Notifications `json:"notifications,omitempty"`
 }
 
 type Notifications struct {
-	EmailNotifications		*EmailNotifications	  `json:"emailNotifications,omitempty"`
-	WebhookNotifications	[]WebhookNotification `json:"webhookNotifications,omitempty"`
+	EmailNotifications   *EmailNotifications   `json:"emailNotifications,omitempty"`
+	WebhookNotifications []WebhookNotification `json:"webhookNotifications,omitempty"`
 }
 
 type EmailNotifications struct {
-	Recipients	[]string `json:"recipients"`
+	Recipients []string `json:"recipients"`
 }
 
 type WebhookNotification struct {
-	WebhookId	string `json:"webhookId"`
-	Payload		string `json:"payload,omitempty"`
+	WebhookId string `json:"webhookId"`
+	Payload   string `json:"payload,omitempty"`
 }

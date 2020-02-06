@@ -24,7 +24,7 @@ func resourceSumologicMetricsAlertMonitor() *schema.Resource {
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default: 	  "",
+				Default:      "",
 				ValidateFunc: validation.StringLenBetween(0, 4095),
 			},
 			"alert_queries": {
@@ -39,8 +39,8 @@ func resourceSumologicMetricsAlertMonitor() *schema.Resource {
 							Required: true,
 						},
 						"query": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
 							ValidateFunc: validation.StringLenBetween(0, 4095),
 						},
 					},
@@ -58,8 +58,8 @@ func resourceSumologicMetricsAlertMonitor() *schema.Resource {
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"warning_rule": getRuleSchema(),
-						"critical_rule": getRuleSchema(),
+						"warning_rule":      getRuleSchema(),
+						"critical_rule":     getRuleSchema(),
 						"missing_data_rule": getMissingDataRuleSchema(),
 					},
 				},
@@ -77,8 +77,8 @@ func getRuleSchema() *schema.Schema {
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"threshold_type": {
-					Type:     	  schema.TypeString,
-					Required: 	  true,
+					Type:         schema.TypeString,
+					Required:     true,
 					ValidateFunc: validation.StringInSlice([]string{"Above", "Below"}, false),
 				},
 				"threshold": {
@@ -86,8 +86,8 @@ func getRuleSchema() *schema.Schema {
 					Required: true,
 				},
 				"duration": {
-					Type:     	  schema.TypeString,
-					Required: 	  true,
+					Type:         schema.TypeString,
+					Required:     true,
 					ValidateFunc: validation.StringInSlice([]string{"0", "5m", "10m", "15m", "30m", "60m"}, false),
 				},
 				"notifications": getNotificationsSchema(),
@@ -105,13 +105,13 @@ func getMissingDataRuleSchema() *schema.Schema {
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"affected_time_series": {
-					Type:     	  schema.TypeString,
-					Required: 	  true,
+					Type:         schema.TypeString,
+					Required:     true,
 					ValidateFunc: validation.StringInSlice([]string{"all", "any"}, false),
 				},
 				"duration": {
-					Type:     	  schema.TypeInt,
-					Required: 	  true,
+					Type:         schema.TypeInt,
+					Required:     true,
 					ValidateFunc: validation.IntBetween(60000, 3600000),
 				},
 				"notifications": getNotificationsSchema(),
@@ -136,11 +136,11 @@ func getNotificationsSchema() *schema.Schema {
 					Elem: &schema.Resource{
 						Schema: map[string]*schema.Schema{
 							"recipients": {
-								Type: 	  schema.TypeList,
+								Type:     schema.TypeList,
 								Required: true,
 								MinItems: 1,
 								Elem: &schema.Schema{
-									Type: 		  schema.TypeString,
+									Type: schema.TypeString,
 								},
 							},
 						},
@@ -244,10 +244,10 @@ func resourceToMetricsAlertMonitor(d *schema.ResourceData) MetricsAlertMonitor {
 	monitorRules := expandMonitorRules(d.Get("monitor_rules").([]interface{})[0])
 
 	metricsAlertMonitor := MetricsAlertMonitor{
-		Name:		  d.Get("name").(string),
+		Name:         d.Get("name").(string),
 		Description:  d.Get("description").(string),
 		AlertQueries: alertQueries,
-		Timezone: 	  d.Get("timezone").(string),
+		Timezone:     d.Get("timezone").(string),
 		MonitorRules: monitorRules,
 	}
 
@@ -280,8 +280,8 @@ func expandMonitorRules(monitorRules interface{}) MonitorRules {
 	missingDataRule = expandMissingDataRule(rulesMap)
 
 	return MonitorRules{
-		WarningRule: warningRule,
-		CriticalRule: criticalRule,
+		WarningRule:     warningRule,
+		CriticalRule:    criticalRule,
 		MissingDataRule: missingDataRule,
 	}
 }
@@ -295,10 +295,10 @@ func expandRule(key string, rulesMap map[string]interface{}) *Rule {
 		duration := ruleMap["duration"].(string)
 		notifications := expandNotifications(ruleMap)
 		rule = &Rule{
-			ThresholdType:	thresholdType,
-			Threshold:		threshold,
-			Duration:		duration,
-			Notifications:  notifications,
+			ThresholdType: thresholdType,
+			Threshold:     threshold,
+			Duration:      duration,
+			Notifications: notifications,
 		}
 	}
 	return rule
@@ -349,7 +349,7 @@ func expandEmailNotifications(notificationsMap map[string]interface{}) *EmailNot
 				recipients = append(recipients, recipientRaw.(string))
 			}
 			emailNotifications = &EmailNotifications{
-				Recipients:	recipients,
+				Recipients: recipients,
 			}
 		} else {
 			emailNotifications = &EmailNotifications{
