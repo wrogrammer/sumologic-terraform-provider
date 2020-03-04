@@ -1,3 +1,10 @@
+---
+layout: "sumologic"
+page_title: "SumoLogic: sumologic_metrics_alert_monitor"
+description: |-
+  Provides a Sumologic Metrics Alert Monitor
+---
+
 # sumologic_metrics_alert_monitor
 Provides a [Sumologic Metrics Alert Monitor][1].
 
