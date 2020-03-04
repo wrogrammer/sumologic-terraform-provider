@@ -102,7 +102,7 @@ func getTestMonitorRules() MonitorRules {
 	}
 	missingDataRule := &MissingDataRule{
 		AffectedTimeSeries: "all",
-		Duration:           60000,
+		Duration:           "5m",
 		Notifications:      missingDataRuleNotifications,
 	}
 
@@ -172,7 +172,7 @@ func getTestMonitorRulesConfig() map[string]interface{} {
 	missingDataRuleConfig := []interface{}{
 		map[string]interface{}{
 			"affected_time_series": "all",
-			"duration":             60000,
+			"duration":             "5m",
 			"notifications":        missingDataRuleNotificationsConfig,
 		},
 	}

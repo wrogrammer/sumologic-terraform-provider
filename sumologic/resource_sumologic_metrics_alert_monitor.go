@@ -110,9 +110,9 @@ func getMissingDataRuleSchema() *schema.Schema {
 					ValidateFunc: validation.StringInSlice([]string{"all", "any"}, false),
 				},
 				"duration": {
-					Type:         schema.TypeInt,
+					Type:         schema.TypeString,
 					Required:     true,
-					ValidateFunc: validation.IntBetween(60000, 3600000),
+					ValidateFunc: validation.StringInSlice([]string{"5m", "10m", "15m", "30m", "60m"}, false),
 				},
 				"notifications": getNotificationsSchema(),
 			},
@@ -309,7 +309,7 @@ func expandMissingDataRule(rulesMap map[string]interface{}) *MissingDataRule {
 	if missingDataRuleRaw := rulesMap["missing_data_rule"].([]interface{}); len(missingDataRuleRaw) == 1 {
 		missingDataRuleMap := missingDataRuleRaw[0].(map[string]interface{})
 		affectedTimeSeries := missingDataRuleMap["affected_time_series"].(string)
-		duration := missingDataRuleMap["duration"].(int)
+		duration := missingDataRuleMap["duration"].(string)
 		notifications := expandNotifications(missingDataRuleMap)
 		missingDataRule = &MissingDataRule{
 			AffectedTimeSeries: affectedTimeSeries,

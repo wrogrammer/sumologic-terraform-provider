@@ -38,7 +38,7 @@ resource "sumologic_metrics_alert_monitor" "high_cpu_monitor" {
     }
     missing_data_rule {
       affected_time_series = "all"
-      duration = 60000
+      duration = "5m"
       notifications {
         email_notifications {
           recipients = ["user@domain.com", "other_user@domain.com"]
@@ -82,7 +82,8 @@ shown in emails and sent to webhooks are expressed in this time zone.
 `missing_data_rule` object schema:
   -  `affected_time_series` - (Required) Defines when an alert should be raised: either when all or any time series are 
   missing data. Accepted values for this field are: `all` and `any`.
-  -  `duration` - (Required) A time window in milliseconds. The minimum value is equal to the query quantization.
+  -  `duration` - (Required) A time window. Currently, the only accepted values are `5m`, `10m`, `15m`, `30m` and `60m` 
+    (m suffix means minutes). The minimum value is equal to the query quantization.
   -  `notifications` - (Optional) Monitor notifications.
   
 `notifications` object schema:

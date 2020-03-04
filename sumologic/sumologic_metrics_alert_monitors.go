@@ -80,7 +80,7 @@ type Rule struct {
 
 type MissingDataRule struct {
 	AffectedTimeSeries string         `json:"affectedTimeSeries"`
-	Duration           int            `json:"duration"`
+	Duration           string         `json:"duration"`
 	Notifications      *Notifications `json:"notifications,omitempty"`
 }
 
